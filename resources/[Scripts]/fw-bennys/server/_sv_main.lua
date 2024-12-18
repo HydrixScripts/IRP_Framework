@@ -1,22 +1,39 @@
 FW = exports['fw-core']:GetCoreObject()
 
-FW.Commands.Add("neon", "Zet je Neonlampen aan of uit.", {}, false, function(source, args)
+FW.Commands.Add("neon", "Turn Neons On/Off", {}, false, function(source, args)
     TriggerClientEvent("fw-bennys:Client:ToggleNeon", source)
 end)
 
 FW.Functions.CreateCallback("fw-bennys:Server:SaveMods", function(Source, Cb, NetId, Mods, Plate, ButtonData)
     local Player = FW.Functions.GetPlayer(Source)
-    if Player == nil then return Cb(false) end
+    if Player == nil then 
+        Cb(false) 
+        return 
+    end
 
+    -- Save modifications to the database
     local Result = exports['ghmattimysql']:executeSync("UPDATE `player_vehicles` SET `mods` = @Mods WHERE `plate` = @Plate", {
         ['@Mods'] = json.encode(Mods),
         ['@Plate'] = Plate,
     })
 
-    TriggerEvent('fw-logs:Server:Log', 'bennysMenu', 'Upgrade Purchased', ("User: [%s] - %s - %s %s\nPlate: %s\nData: ```json\n%s```"):format(Player.PlayerData.source, Player.PlayerData.citizenid, Player.PlayerData.charinfo.firstname, Player.PlayerData.charinfo.lastname, Plate, json.encode(ButtonData, {indent=4})), 'green')
+    -- Log the modification
+    TriggerEvent('fw-logs:Server:Log', 'bennysMenu', 'Upgrade Purchased', ("User: [%s] - %s - %s %s\nPlate: %s\nData: ```json\n%s```"):format(
+        Player.PlayerData.source,
+        Player.PlayerData.citizenid,
+        Player.PlayerData.charinfo.firstname,
+        Player.PlayerData.charinfo.lastname,
+        Plate,
+        json.encode(ButtonData, {indent = 4})
+    ), 'green')
 
+    -- Notify the client about the save result
+    TriggerClientEvent('fw-bennys:Client:ModsSaved', Source, Result.affectedRows > 0)
+
+    -- Return the callback response
     Cb(Result.affectedRows > 0)
 end)
+
 
 FW.Functions.CreateCallback("fw-bennys:Server:IsMechanicOnline", function(Source, Cb)
     local Mechanics = 0
