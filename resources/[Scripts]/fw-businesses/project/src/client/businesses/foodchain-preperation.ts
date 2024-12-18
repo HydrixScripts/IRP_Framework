@@ -33,22 +33,36 @@ const PrepareFood = async (Data: {
     }
 }) => {
     if (!await HasAllIngredients(Data.Dish.ingredients)) {
-        return FW.Functions.Notify("Niet genoeg ingrediënten..", "error")
-    };
+        return FW.Functions.Notify("Not enough ingredients..", "error");
+    }
 
     exp["fw-inventory"].SetBusyState(true);
 
     setTimeout(async () => {
-        TriggerEvent('fw-emotes:Client:PlayEmote', "cut", undefined, true)
-        const Finished = await FW.Functions.CompactProgressbar(5000, "Eten voorbereiden..", false, true, {disableMovement: true, disableCarMovement: true, disableMouse: false, disableCombat: true}, {}, {}, {}, false)
-        TriggerEvent("fw-emotes:Client:CancelEmote", true)
+        TriggerEvent('fw-emotes:Client:PlayEmote', "cut", undefined, true);
+        const Finished = await FW.Functions.CompactProgressbar(
+            5000,
+            "Preparing food..",
+            false,
+            true,
+            { disableMovement: true, disableCarMovement: true, disableMouse: false, disableCombat: true },
+            {},
+            {},
+            {},
+            false
+        );
+        TriggerEvent("fw-emotes:Client:CancelEmote", true);
         exp["fw-inventory"].SetBusyState(false);
 
         if (!Finished) return;
-        FW.TriggerServer("fw-businesses:Server:Foodchain:FinishMeal", Data.Business || CurrentClock.Business, Data.Dish);
 
-        await Delay(100);
-        PrepareFood(Data);
+        FW.TriggerServer(
+            "fw-businesses:Server:Foodchain:FinishMeal",
+            Data.Business || CurrentClock.Business,
+            Data.Dish
+        );
+
+        FW.Functions.Notify("Food Item Made!", "success");  // Optional: notify user
     }, 250);
 };
 
@@ -61,7 +75,7 @@ on("fw-businesses:Client:Foodchain:CreateMeal", async (Data: {
 }) => {
     const Tests = DishSkillChecks[Data.DishType];
     const Result = await exp['fw-ui'].StartSkillTest(Tests, [ 20, 30 ], [ 1000, 1500 ], false);
-    if (!Result) return FW.Functions.Notify("Gefaald..", "error");
+    if (!Result) return FW.Functions.Notify("Failed..", "error");
 
     PrepareFood(Data);
 });
@@ -72,10 +86,10 @@ on("fw-businesses:Client:Foodchain:PrepareFood", async (Data: {
 }) => {
     if (!Data.Business) Data.Business = CurrentClock.Business;
     if (await IsBusinessOnLockdown(Data.Business)) {
-        return FW.Functions.Notify("Bedrijf is in lockdown..", "error");
+        return FW.Functions.Notify("Business is in lockdown..", "error");
     };
 
-    if (!await HasRolePermission(Data.Business, "CraftAccess")) return FW.Functions.Notify("Geen toegang..", "error");
+    if (!await HasRolePermission(Data.Business, "CraftAccess")) return FW.Functions.Notify("No access..", "error");
 
     const {categoryLabels} = await exp['fw-config'].GetModuleConfig("bus-foodchains");
 
@@ -120,39 +134,39 @@ on("fw-businesses:Client:Foodchain:ManageMenu", async (Data: {
     Business: string;
 }) => {
     if (!Data.Business) Data.Business = CurrentClock.Business;
-    if (await IsBusinessOnLockdown(Data.Business)) return FW.Functions.Notify("Bedrijf is in lockdown..", "error");
+    if (await IsBusinessOnLockdown(Data.Business)) return FW.Functions.Notify("Business is in lockdown..", "error");
 
     FW.Functions.OpenMenu({
         MainMenuItems: [
             {
                 Icon: 'hamburger',
-                Title: "Menukaart management"
+                Title: "Menu management"
             },
             {
                 Icon: 'file',
-                Title: 'Nieuw item aanmaken',
+                Title: 'Create new item',
                 SecondMenu: [
                     {
                         Icon: 'hamburger',
-                        Title: 'Hoofdgerecht',
+                        Title: 'Main Dish',
                         CloseMenu: true,
                         Data: { Event: 'fw-businesses:Client:Foodchain:CreateNewItem', Dish: "Main", Business: Data.Business },
                     },
                     {
                         Icon: 'bacon',
-                        Title: 'Tussengerecht',
+                        Title: 'Side Dish',
                         CloseMenu: true,
                         Data: { Event: 'fw-businesses:Client:Foodchain:CreateNewItem', Dish: "Side", Business: Data.Business },
                     },
                     {
                         Icon: 'ice-cream',
-                        Title: 'Nagerecht',
+                        Title: 'Dessert',
                         CloseMenu: true,
                         Data: { Event: 'fw-businesses:Client:Foodchain:CreateNewItem', Dish: "Dessert", Business: Data.Business },
                     },
                     {
                         Icon: 'coffee',
-                        Title: 'Drankje',
+                        Title: 'Drink',
                         CloseMenu: true,
                         Data: { Event: 'fw-businesses:Client:Foodchain:CreateNewItem', Dish: "Drink", Business: Data.Business },
                     }
@@ -160,7 +174,7 @@ on("fw-businesses:Client:Foodchain:ManageMenu", async (Data: {
             },
             {
                 Icon: 'utensils',
-                Title: 'Gerechten',
+                Title: 'Dishes',
                 CloseMenu: true,
                 Data: {
                     Event: 'fw-businesses:Client:Foodchain:OpenDishesMenu',
@@ -174,14 +188,14 @@ on("fw-businesses:Client:Foodchain:ManageMenu", async (Data: {
 on("fw-businesses:Client:Foodchain:OpenDishesMenu", async (Data: {
     Business: string;
 }) => {
-    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("Geen toegang..", "error");
+    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("No access..", "error");
     await Delay(200);
 
     FW.Functions.OpenMenu({
         MainMenuItems: [
             {
                 Icon: 'tasks',
-                Title: 'Beheer hoofdgerechten',
+                Title: 'Manage main dishes',
                 Data: {
                     Event: 'fw-businesses:Client:Foodchain:ManageDishes',
                     Dish: "Main",
@@ -190,7 +204,7 @@ on("fw-businesses:Client:Foodchain:OpenDishesMenu", async (Data: {
             },
             {
                 Icon: 'tasks',
-                Title: 'Beheer tussengerechten',
+                Title: 'Manage entrees',
                 Data: {
                     Event: 'fw-businesses:Client:Foodchain:ManageDishes',
                     Dish: "Side",
@@ -199,7 +213,7 @@ on("fw-businesses:Client:Foodchain:OpenDishesMenu", async (Data: {
             },
             {
                 Icon: 'tasks',
-                Title: 'Beheer nagerechten',
+                Title: 'Manage desserts',
                 Data: {
                     Event: 'fw-businesses:Client:Foodchain:ManageDishes',
                     Dish: "Dessert",
@@ -208,7 +222,7 @@ on("fw-businesses:Client:Foodchain:OpenDishesMenu", async (Data: {
             },
             {
                 Icon: 'tasks',
-                Title: 'Beheer dranken',
+                Title: 'Manage drinks',
                 Data: {
                     Event: 'fw-businesses:Client:Foodchain:ManageDishes',
                     Dish: "Drink",
@@ -223,12 +237,12 @@ on("fw-businesses:Client:Foodchain:ManageDishes", async (Data: {
     Business: string;
     Dish: DishTypes
 }) => {
-    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("Geen toegang..", "error");
+    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("No Access..", "error");
     await Delay(200);
 
     const ContextItems: Array<{}> = [
         {
-            Title: "Terug",
+            Title: "Back",
             Data: {
                 Event: 'fw-businesses:Client:Foodchain:OpenDishesMenu',
                 Business: Data.Business
@@ -258,10 +272,10 @@ on("fw-businesses:Client:Foodchain:ManageDishes", async (Data: {
 
         ContextItems.push({
             Title: SharedData?.Label || Dish.dish_id,
-            Desc: SharedData?.Description || `Geen data gevonden! (${Dish.dish_id})`,
+            Desc: SharedData?.Description || `No dates found! (${Dish.dish_id})`,
             SecondMenu: [
                 {
-                    Title: "Item verwijderen",
+                    Title: "Delete item",
                     Icon: "trash",
                     Data: {
                         Event: "fw-businesses:Server:Foodchain:DeleteItem",
@@ -280,12 +294,12 @@ on("fw-businesses:Client:Foodchain:CreateNewItem", async (Data: {
     Business: string;
     Dish: DishTypes
 }) => {
-    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("Geen toegang..", "error");
-    if (await IsBusinessOnLockdown(Data.Business)) return FW.Functions.Notify("Bedrijf is in lockdown..", "error");
+    if (Data.Business !== "Prison" && !IsBusinessOwner(Data.Business)) return FW.Functions.Notify("No access..", "error");
+    if (await IsBusinessOnLockdown(Data.Business)) return FW.Functions.Notify("Business is in lockdown..", "error");
     await Delay(200);
 
     if (!DishSkillChecks[Data.Dish]) {
-        return FW.Function.Notify("Ongeldige gerechts type..", "error");
+        return FW.Function.Notify("Invalid court type..", "error");
     };
 
     const {categoryLabels, ingredientsPerDish} = await exp['fw-config'].GetModuleConfig("bus-foodchains");
@@ -297,8 +311,8 @@ on("fw-businesses:Client:Foodchain:CreateNewItem", async (Data: {
     });
 
     const Result = await exp['fw-ui'].CreateInput([
-        { Label: "Naam", Icon: "circle", Name: "Name" },
-        { Label: "Beschrijving", Icon: "circle", Name: "Description" },
+        { Label: "Name", Icon: "circle", Name: "Name" },
+        { Label: "Description", Icon: "circle", Name: "Description" },
         { Label: "Image URL (100x100)", Icon: "circle", Name: "Image" },
         ...Array.from({ length: ingredientsPerDish[Data.Dish] }, (_, index) => ({
             Label: `Ingredient Type ${index + 1}`,
@@ -311,7 +325,7 @@ on("fw-businesses:Client:Foodchain:CreateNewItem", async (Data: {
 
     for (let i = 0; i < ingredientsPerDish[Data.Dish]; i++) {
         if (Result[`Ingredient${i+1}`].trim().length == 0) {
-            FW.Functions.Notify("Je moet alle ingredienten invullen!")
+            FW.Functions.Notify("You must fill in all the ingredients!")
             return;
         };
     };
