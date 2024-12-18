@@ -38,7 +38,7 @@ export const DeclineContract = async (Data: any) => {
         SetContracts(Result.contracts);
     }, 100);
 
-    return { success: true, message: "Contract geweigerd!" };
+    return { success: true, message: "Contract rejected!" };
 };
 
 export const CancelContract = async (Data: any) => {
@@ -48,7 +48,7 @@ export const CancelContract = async (Data: any) => {
         SetContracts(Result.contracts);
     }, 100);
 
-    return { success: true, message: "Contract geannuleerd, je inkoop is gerefund!" };
+    return { success: true, message: "Contract cancelled, your purchase has been refunded!" };
 };
 
 export const AuctionContract = async (Data: any) => {
@@ -58,7 +58,7 @@ export const AuctionContract = async (Data: any) => {
         SetContracts(Result.contracts);
     }, 100);
 
-    return { success: true, message: "Contract succesvol op de veiling aangeboden!" };
+    return { success: true, message: "Contract successfully offered at auction!" };
 };
 
 export const TransferContract = async (Data: any) => {
