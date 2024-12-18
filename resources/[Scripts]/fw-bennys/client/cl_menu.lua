@@ -15,7 +15,7 @@ function BuildMenu(Vehicle)
         Menu.Populate('Repair', {
             Label = "Repair",
             Id = "RepairVehicle",
-            Costs = "€" .. Costs,
+            Costs = "$" .. Costs,
             Data = {
                 Costs = Costs
             }
@@ -60,7 +60,7 @@ function BuildMenu(Vehicle)
                         Label = v.Label,
                         TargetMenu = v.TargetMenu,
                         Installed = v.Data ~= nil and IsModInstalled(Vehicle, v.Data) or nil,
-                        Costs = GetModPrice(v.Id, k) ~= nil and '€' .. GetModPrice(v.Id, k) or nil,
+                        Costs = GetModPrice(v.Id, k) ~= nil and '$' .. GetModPrice(v.Id, k) or nil,
                         Data = v.Data or {},
                     })
                 end
@@ -99,7 +99,7 @@ function BuildMenu(Vehicle)
                         Menu.Populate(Data.Id, {
                             Id = Data.Id,
                             Label = 'Stock ' .. Data.Label,
-                            Costs = "€0",
+                            Costs = "$0",
                             Installed = GetVehicleMod(Vehicle, Data.ModType) == -1,
                             Data = {
                                 Costs = 0,
@@ -118,7 +118,7 @@ function BuildMenu(Vehicle)
                             Menu.Populate(Data.Id, {
                                 Id = Data.Id,
                                 Label = ModLabel,
-                                Costs = "€" .. GetModPrice(Data.Id, (i + 1)),
+                                Costs = "$" .. GetModPrice(Data.Id, (i + 1)),
                                 Installed = GetVehicleMod(Vehicle, Data.ModType) == i,
                                 Data = {
                                     Costs = GetModPrice(Data.Id, (i + 1)),
@@ -573,7 +573,11 @@ RegisterNUICallback("OpenTargetMenu", function(Data, Cb)
         elseif Data.TargetMenu == 'WheelsOffroad'then WheelIndex = 4
         elseif Data.TargetMenu == 'WheelsTuner'then WheelIndex = 5
         elseif Data.TargetMenu == 'WheelsMotorcycle'then WheelIndex = 6
-        elseif Data.TargetMenu == 'WheelsHighend'then WheelIndex = 7 end
+        elseif Data.TargetMenu == 'WheelsHighend'then WheelIndex = 7
+        elseif Data.TargetMenu == 'WheelsDrag'then WheelIndex = 8
+        elseif Data.TargetMenu == 'WheelsStreet'then WheelIndex = 9
+        elseif Data.TargetMenu == 'WheelsTrack'then WheelIndex = 10
+        elseif Data.TargetMenu == 'WheelsBennys'then WheelIndex = 11 end
 
         SetVehicleWheelType(Vehicle, WheelIndex)
     end
