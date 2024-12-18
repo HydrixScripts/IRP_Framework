@@ -36,13 +36,13 @@ setImmediate(async () => {
             {
                 Name: 'highcommand_badge',
                 Icon: 'fas fa-id-badge',
-                Label: 'Vliegbrevet Maken',
+                Label: 'Get a pilots license',
                 EventType: 'Client',
                 EventName: 'fw-ui:Client:CreateBadge',
                 EventParams: { Badge: 'flightschool' },
                 Enabled: async () => {
-                    if (await IsBusinessOnLockdown("Los Santos Vliegschool")) return false;
-                    return await HasRolePermission("Los Santos Vliegschool", "ChargeExternal");
+                    if (await IsBusinessOnLockdown("Los Santos Flightschool")) return false;
+                    return await HasRolePermission("Los Santos Flightschool", "ChargeExternal");
                 }
             },
             {
@@ -53,8 +53,8 @@ setImmediate(async () => {
                 EventName: 'fw-businesses:Client:OnFlightschoolStore',
                 EventParams: {},
                 Enabled: async () => {
-                    if (await IsBusinessOnLockdown("Los Santos Vliegschool")) return false;
-                    return await HasRolePermission("Los Santos Vliegschool", "ChargeExternal");
+                    if (await IsBusinessOnLockdown("Los Santos Flightschool")) return false;
+                    return await HasRolePermission("Los Santos Flightschool", "ChargeExternal");
                 }
             },
         ]
