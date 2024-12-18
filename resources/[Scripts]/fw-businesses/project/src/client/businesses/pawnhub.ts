@@ -6,7 +6,7 @@ onNet("fw-businesses:Client:PawnHub:Tray", async (Data: {
     name: string;
 }) => {
     if (await IsBusinessOnLockdown("PawnNGo")) {
-        return FW.Functions.Notify("Bedrijf is in lockdown..", "error")
+        return FW.Functions.Notify("Company is in lockdown..", "error")
     };
 
     if (exp['fw-inventory'].CanOpenInventory()) {
@@ -16,11 +16,11 @@ onNet("fw-businesses:Client:PawnHub:Tray", async (Data: {
 
 onNet("fw-businesses:Client:PawnHub:Stash", async () => {
     if (!await HasRolePermission("PawnNGo", 'StashAccess')) {
-        return FW.Functions.Notify("Geen toegang..", "error")
+        return FW.Functions.Notify("No access..", "error")
     }
 
     if (await IsBusinessOnLockdown("PawnNGo")) {
-        return FW.Functions.Notify("Bedrijf is in lockdown..", "error")
+        return FW.Functions.Notify("Business is in lockdown..", "error")
     };
 
     if (exp['fw-inventory'].CanOpenInventory()) {
@@ -30,11 +30,11 @@ onNet("fw-businesses:Client:PawnHub:Stash", async () => {
 
 onNet("fw-businesses:Client:PawnHub:Craft", async () => {
     if (!await HasRolePermission("PawnNGo", 'CraftAccess')) {
-        return FW.Functions.Notify("Geen toegang..", "error")
+        return FW.Functions.Notify("No Access..", "error")
     }
 
     if (await IsBusinessOnLockdown("PawnNGo")) {
-        return FW.Functions.Notify("Bedrijf is in lockdown..", "error")
+        return FW.Functions.Notify("Business is in lockdown..", "error")
     };
 
     if (exp['fw-inventory'].CanOpenInventory()) {
@@ -47,11 +47,11 @@ onNet("fw-businesses:Client:PawnHub:Scrap", async () => {
     if (!await HasRolePermission("PawnNGo", "CraftAccess")) return;
 
     if (await IsBusinessOnLockdown("PawnNGo")) {
-        return FW.Functions.Notify("Bedrijf is in lockdown..", "error");
+        return FW.Functions.Notify("Business is in lockdown..", "error");
     };
 
     const Result = await FW.SendCallback("fw-businesses:Server:PawnHub:GetScrapItems");
-    if (!Result || Result.length == 0) return FW.Functions.Notify("Je hebt niks opzak om te scrappen..", "error");
+    if (!Result || Result.length == 0) return FW.Functions.Notify("You don't have anything in your pocket to scrap..", "error");
 
     let ContextItems = [];
     for (let i = 0; i < Result.length; i++) {
@@ -117,7 +117,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'craft',
                 Icon: 'fas fa-wrench',
-                Label: 'Craften',
+                Label: 'Crafting',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:PawnHub:Craft',
                 EventParams: ZoneData.data,
@@ -132,7 +132,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'scrap',
                 Icon: 'fas fa-hammer',
-                Label: 'Scrappen',
+                Label: 'Scrap',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:PawnHub:Scrap',
                 EventParams: ZoneData.data,
@@ -147,7 +147,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'stash',
                 Icon: 'fas fa-box-open',
-                Label: 'Toonbank',
+                Label: 'Counter',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:PawnHub:Tray',
                 EventParams: ZoneData.data,
@@ -159,7 +159,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'pay_payment',
                 Icon: 'fas fa-hand-holding-usd',
-                Label: 'Betalen',
+                Label: 'Pay',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:Foodchain:GetPayments',
                 EventParams: ZoneData.data,
@@ -169,7 +169,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'setup_payment',
                 Icon: 'fas fa-cash-register',
-                Label: 'Bestelling Openen',
+                Label: 'Open Order',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:Foodchain:SetupPayment',
                 EventParams: { RegisterId: ZoneData.data.RegisterId },
@@ -186,7 +186,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'clock_in',
                 Icon: 'fas fa-clock',
-                Label: 'Inklokken',
+                Label: 'Clock in',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:SetClock',
                 EventParams: { Business: "PawnNGo", ClockedIn: true },
@@ -200,7 +200,7 @@ const loadPawnhubZones = async () => {
             options.push({
                 Name: 'clock_out',
                 Icon: 'fas fa-clock',
-                Label: 'Uitklokken',
+                Label: 'Clock out',
                 EventType: 'Client',
                 EventName: 'fw-businesses:Client:SetClock',
                 EventParams: { Business: "PawnNGo", ClockedIn: false },
