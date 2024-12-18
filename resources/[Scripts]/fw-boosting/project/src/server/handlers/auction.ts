@@ -21,7 +21,7 @@ export default () => {
             return Cb({
                 data: {
                     succes: false,
-                    message: `Je hebt niet genoeg ${Data.contract.Crypto} voor dit bod!`
+                    message: `You don't have enough ${Data.contract.Crypto} for this offer!`
                 }
             });
         };
@@ -35,7 +35,7 @@ export default () => {
             return Cb({
                 data: {
                     success: false,
-                    message: "Er is iets misgegaan, probeer het later nog eens!"
+                    message: "Something went wrong, please try again later!"
                 }
             });
         };
@@ -45,7 +45,7 @@ export default () => {
     
         const PreviousBidder = FW.Functions.GetPlayerByCitizenId(Result[0].bidder);
         if (PreviousBidder) {
-            emitNet("fw-phone:Client:Notification", PreviousBidder.PlayerData.source, `boosting-auction-${Data.contract.Id}`, 'fas fa-gavel', [ 'white', '#1c305c' ], "Overboden", `${Result[0].bid} ${Data.contract.Crypto} is teruggestort in je wallet.`)
+            emitNet("fw-phone:Client:Notification", PreviousBidder.PlayerData.source, `boosting-auction-${Data.contract.Id}`, 'fas fa-gavel', [ 'white', '#1c305c' ], "Outlawed", `${Result[0].bid} ${Data.contract.Crypto} is Backdeposited to your wallet.`)
         }
     
         await exp['ghmattimysql'].executeSync("UPDATE `laptop_boosting` SET `bid` = ?, `bidder` = ?, `auction_end` = `auction_end` + ? WHERE `id` = ?", [
@@ -60,7 +60,7 @@ export default () => {
         Cb({
             data: {
                 success: true,
-                message: "Bod geplaatst!"
+                message: "Offer placed!"
             }
         });
     })
